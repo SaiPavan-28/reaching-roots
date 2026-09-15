@@ -1,5 +1,8 @@
 {
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
-  "/signup/page": "app/signup/page.js"
+  "/api/auth/farmer/send-otp/route": "app/api/auth/farmer/send-otp/route.js",
+  "/api/auth/farmer/verify-otp/route": "app/api/auth/farmer/verify-otp/route.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/staff/overview/route": "app/api/staff/overview/route.js",
+  "/api/villages/route": "app/api/villages/route.js",
+  "/login/page": "app/login/page.js"
 }

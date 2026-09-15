@@ -21,7 +21,16 @@
     "afterFiles": [],
     "fallback": []
   },
-  "dynamicRoutes": [],
+  "dynamicRoutes": [
+    {
+      "page": "/api/villages/[id]",
+      "regex": "^/api/villages/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/villages/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
   "staticRoutes": [
     {
       "page": "/",
@@ -40,6 +49,48 @@
       "regex": "^/_not\\-found(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/api/auth/farmer/send-otp",
+      "regex": "^/api/auth/farmer/send\\-otp(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/farmer/send\\-otp(?:/)?$"
+    },
+    {
+      "page": "/api/auth/farmer/verify-otp",
+      "regex": "^/api/auth/farmer/verify\\-otp(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/farmer/verify\\-otp(?:/)?$"
+    },
+    {
+      "page": "/api/auth/login",
+      "regex": "^/api/auth/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/login(?:/)?$"
+    },
+    {
+      "page": "/api/auth/me",
+      "regex": "^/api/auth/me(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/me(?:/)?$"
+    },
+    {
+      "page": "/api/auth/signup/farmer",
+      "regex": "^/api/auth/signup/farmer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/signup/farmer(?:/)?$"
+    },
+    {
+      "page": "/api/staff/overview",
+      "regex": "^/api/staff/overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/staff/overview(?:/)?$"
+    },
+    {
+      "page": "/api/villages",
+      "regex": "^/api/villages(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/villages(?:/)?$"
     },
     {
       "page": "/dashboard/farmer",

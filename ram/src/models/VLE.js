@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 /**
  * VLE (Village Level Entrepreneur) Schema
@@ -13,6 +14,7 @@ const vleSchema = new mongoose.Schema(
       trim: true,
       uppercase: true,
       index: true,
+      default: () => `VLE-${Date.now()}`,
     },
     fullName: {
       type: String,
@@ -41,10 +43,14 @@ const vleSchema = new mongoose.Schema(
       default: '',
       maxlength: [120, 'Center name cannot exceed 120 characters'],
     },
+    password: {
+      type: String,
+      select: false,
+    },
     auth: {
       password: {
         type: String,
-        select: false, // For credential-based login if used
+        select: false, // For credential-based login
       },
       otp: {
         type: String,
@@ -80,6 +86,25 @@ const vleSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// Hash password before saving
+vleSchema.pre('save', async function (next) {
+  if (this.isModified('password') && this.password) {
+    this.password = await bcrypt.hash(this.password, 10);
+    this.auth.password = this.password;
+  } else if (this.isModified('auth.password') && this.auth.password) {
+    this.auth.password = await bcrypt.hash(this.auth.password, 10);
+    this.password = this.auth.password;
+  }
+  next();
+});
+
+// Instance method to compare password
+vleSchema.methods.comparePassword = async function (candidatePassword) {
+  const hash = this.password || (this.auth && this.auth.password);
+  if (!hash) return false;
+  return bcrypt.compare(candidatePassword, hash);
+};
 
 // Virtual relationships
 vleSchema.virtual('machineryStock', {

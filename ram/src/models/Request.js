@@ -3,7 +3,9 @@ import mongoose from 'mongoose';
 /**
  * Request Schema
  * Represents a machinery/service request initiated by a Farmer and assigned to a VLE.
- * Enforces strict status transitions and references.
+ * Enforces state machine transitions:
+ *   PENDING -> ACCEPTED -> COMPLETED
+ *   PENDING -> REJECTED
  */
 const requestSchema = new mongoose.Schema(
   {
@@ -14,6 +16,7 @@ const requestSchema = new mongoose.Schema(
       trim: true,
       uppercase: true,
       index: true,
+      default: () => `REQ-${Date.now()}`,
     },
     farmerId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -38,7 +41,6 @@ const requestSchema = new mongoose.Schema(
       required: [true, 'Required date for machinery is required'],
       validate: {
         validator: function (val) {
-          // On new request creation, ensure requiredDate is not in the past
           if (this.isNew) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -64,10 +66,11 @@ const requestSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ['PENDING', 'ACCEPTED', 'REJECTED'],
-        message: 'Status must be PENDING, ACCEPTED, or REJECTED',
+        values: ['PENDING', 'ACCEPTED', 'COMPLETED', 'REJECTED'],
+        message: 'Status must be PENDING, ACCEPTED, COMPLETED, or REJECTED',
       },
       default: 'PENDING',
+      uppercase: true,
       index: true,
     },
     rejectionReason: {
@@ -84,7 +87,36 @@ const requestSchema = new mongoose.Schema(
   }
 );
 
-// Virtual relationship: Link to generated Transaction if accepted and fulfilled
+// State machine transition validation on save
+requestSchema.pre('save', function (next) {
+  if (this.isModified('status') && !this.isNew) {
+    const originalStatus = this.constructor.findById(this._id).then((original) => {
+      if (!original) return next();
+
+      const from = original.status;
+      const to = this.status;
+
+      // Allowed transitions:
+      // PENDING -> ACCEPTED, REJECTED
+      // ACCEPTED -> COMPLETED, REJECTED
+      const allowedTransitions = {
+        PENDING: ['ACCEPTED', 'REJECTED'],
+        ACCEPTED: ['COMPLETED', 'REJECTED'],
+        COMPLETED: [],
+        REJECTED: [],
+      };
+
+      if (from !== to && (!allowedTransitions[from] || !allowedTransitions[from].includes(to))) {
+        return next(new Error(`Invalid status transition from ${from} to ${to}`));
+      }
+      next();
+    }).catch(next);
+    return;
+  }
+  next();
+});
+
+// Virtual relationship: Link to generated Transaction
 requestSchema.virtual('transaction', {
   ref: 'Transaction',
   localField: '_id',
@@ -92,7 +124,7 @@ requestSchema.virtual('transaction', {
   justOne: true,
 });
 
-// Compound indexes for optimal dashboard and status queries
+// Compound indexes for optimal queries
 requestSchema.index({ farmerId: 1, status: 1, createdAt: -1 });
 requestSchema.index({ vleId: 1, status: 1, createdAt: -1 });
 requestSchema.index({ machineryId: 1, status: 1 });

@@ -1,129 +1,68 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Tractor, LogOut, CheckCircle2, Phone, MapPin, User, Calendar } from 'lucide-react';
-import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+import { AppProvider, useApp } from '@/context/AppContext';
+import { Header } from '@/components/common/Header';
+import { Sidebar } from '@/components/common/Sidebar';
+import { VleDashboard } from '@/components/vle/VleDashboard';
+import { VleRequestsList } from '@/components/vle/VleRequestsList';
+import { VleFarmerHistory } from '@/components/vle/VleFarmerHistory';
+import { VleProfile } from '@/components/vle/VleProfile';
 
-export default function VleDashboardPlaceholder() {
-  const router = useRouter();
-  const [session, setSession] = useState<{
-    name?: string;
-    mobile?: string;
-    village?: string;
-    isNewAccount?: boolean;
-    registeredAt?: string;
-  } | null>(null);
+function VleDashboardContent() {
+  const { setRole } = useApp();
+  const [currentTab, setCurrentTab] = useState('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const raw = localStorage.getItem('user_session');
-      if (raw) {
-        try {
-          setSession(JSON.parse(raw));
-        } catch {
-          // ignore
-        }
-      }
-    }
-  }, []);
+    setRole('vle');
+  }, [setRole]);
 
-  const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('user_session');
+  const renderContent = () => {
+    switch (currentTab) {
+      case 'dashboard':
+        return <VleDashboard onNavigate={(tab) => setCurrentTab(tab)} />;
+      case 'farmer-requests':
+        return <VleRequestsList />;
+      case 'farmers':
+      case 'history':
+        return <VleFarmerHistory />;
+      case 'profile':
+        return <VleProfile />;
+      default:
+        return <VleDashboard onNavigate={(tab) => setCurrentTab(tab)} />;
     }
-    router.push('/login?role=vle');
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 flex flex-col antialiased">
-      {/* Top Navigation */}
-      <header className="bg-white border-b border-stone-200 px-4 sm:px-8 py-3.5 flex items-center justify-between sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shadow-xs">
-            <Tractor className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="font-bold text-stone-900 leading-tight">Reaching Roots</div>
-            <div className="text-xs text-stone-500">VLE Portal (ग्राम उद्यमी केंद्र)</div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-stone-100 text-stone-900 flex flex-col antialiased">
+      <Header
+        onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        isMobileMenuOpen={isMobileMenuOpen}
+      />
 
-        <button
-          onClick={handleLogout}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-stone-300 text-stone-700 text-xs font-semibold hover:bg-stone-50 hover:text-stone-900 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Sign Out</span>
-        </button>
-      </header>
+      <div className="flex-1 flex">
+        <Sidebar
+          currentTab={currentTab}
+          onSelectTab={(tab) => setCurrentTab(tab)}
+          isMobileOpen={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
+        />
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-8 flex flex-col justify-center items-center">
-        <div className="w-full bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-md text-center relative overflow-hidden">
-          {/* Header Badge */}
-          <div className="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto mb-5 shadow-xs">
-            <CheckCircle2 className="w-9 h-9" />
+        <main className="flex-1 lg:pl-64 min-w-0">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            {renderContent()}
           </div>
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-3">
-            VLE Authentication Successful
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900">
-            Welcome to the VLE Hub
-          </h1>
-          <p className="text-stone-600 text-sm max-w-md mx-auto mt-2 mb-8">
-            You are authenticated as a Village Level Entrepreneur (VLE). You can manage agricultural machinery, fulfill farmer requests, and coordinate inventory.
-          </p>
-
-          {/* Session Overview Card */}
-          <div className="bg-stone-50 rounded-2xl p-5 border border-stone-200 text-left max-w-md mx-auto mb-8 space-y-3">
-            <div className="text-xs font-bold text-stone-500 uppercase tracking-wider">
-              VLE Center Profile
-            </div>
-            <div className="flex items-center gap-3 text-sm text-stone-800">
-              <User className="w-4 h-4 text-emerald-700 shrink-0" />
-              <span>Operator Name: <strong className="text-stone-900">{session?.name || 'Village Entrepreneur Center'}</strong></span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-stone-800">
-              <Phone className="w-4 h-4 text-emerald-700 shrink-0" />
-              <span>Contact: <strong className="text-stone-900">+91 {session?.mobile || 'Verified Mobile'}</strong></span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-stone-800">
-              <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
-              <span>Location: <strong className="text-stone-900">{session?.village || 'Rampur Center'}</strong></span>
-            </div>
-            <div className="flex items-center gap-3 text-xs text-stone-500 pt-1 border-t border-stone-200">
-              <Calendar className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-              <span>Status: Active Session ({session?.isNewAccount ? 'Newly Registered VLE' : 'Logged In'})</span>
-            </div>
-          </div>
-
-          {/* Stage Note */}
-          <div className="bg-amber-50/80 border border-amber-200 text-amber-900 rounded-xl p-4 text-xs max-w-md mx-auto mb-6 leading-relaxed text-left">
-            <strong className="block text-amber-950 font-semibold mb-1">
-              Phase 1 Milestone Completed:
-            </strong>
-            Authentication UI is fully operational. Machinery inventory, farmer equipment request queues, and transaction logs will be activated in the next phase.
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={handleLogout}
-              className="py-3 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm shadow-xs transition-colors"
-            >
-              Sign Out & Test Another Role
-            </button>
-            <Link
-              href="/login"
-              className="py-3 px-6 rounded-xl border border-stone-300 text-stone-700 font-semibold text-sm hover:bg-stone-50 transition-colors"
-            >
-              Back to Login Screen
-            </Link>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
+  );
+}
+
+export default function VleDashboardPage() {
+  return (
+    <AppProvider>
+      <VleDashboardContent />
+    </AppProvider>
   );
 }

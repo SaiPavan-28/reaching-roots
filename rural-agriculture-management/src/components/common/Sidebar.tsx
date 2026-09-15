@@ -125,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             : 'bg-amber-100 text-amber-900'
                         }`}
                       >
-                        {item.badge}
+                        {String(item.badge)}
                       </span>
                     )}
                   </button>

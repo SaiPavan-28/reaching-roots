@@ -1,0 +1,3 @@
+module.exports=[27572,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"en",children:(0,b.jsx)("body",{className:"min-h-screen bg-stone-50 text-stone-900 antialiased flex flex-col selection:bg-emerald-100 selection:text-emerald-900",children:a})})},"metadata",0,{title:"Reaching Roots | Rural Agriculture Management",description:"Clean, accessible digital platform empowering farmers, village entrepreneurs, and agricultural staff."}])},50645,function(a){a.n(a.i(27572))}];
+
+//# sourceMappingURL=src_app_layout_tsx_0r5yz5t._.js.map

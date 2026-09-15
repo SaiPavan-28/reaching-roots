@@ -1,0 +1,10 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/dashboard/farmer/page": "/dashboard/farmer",
+  "/dashboard/staff/page": "/dashboard/staff",
+  "/dashboard/vle/page": "/dashboard/vle",
+  "/login/page": "/login",
+  "/page": "/",
+  "/signup/page": "/signup"
+}

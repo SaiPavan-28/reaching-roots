@@ -14,6 +14,7 @@ const transactionSchema = new mongoose.Schema(
       trim: true,
       uppercase: true,
       index: true,
+      default: () => `TXN-${Date.now()}`,
     },
     farmerId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -49,11 +50,13 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Quantity or duration is required'],
       trim: true,
+      default: '1 Unit',
     },
     amount: {
       type: Number,
       required: [true, 'Transaction amount is required'],
       min: [0, 'Amount cannot be negative'],
+      default: 0,
     },
     status: {
       type: String,
@@ -62,6 +65,7 @@ const transactionSchema = new mongoose.Schema(
         message: 'Status must be IN_PROGRESS, COMPLETED, DELIVERED, or CANCELLED',
       },
       default: 'COMPLETED',
+      uppercase: true,
       index: true,
     },
   },

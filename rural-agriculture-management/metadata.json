@@ -1,0 +1,6 @@
+{
+  "name": "Rural Agriculture Management",
+  "description": "A rural agriculture management web application for Staff, Farmers, and Village Level Entrepreneurs (VLE).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
